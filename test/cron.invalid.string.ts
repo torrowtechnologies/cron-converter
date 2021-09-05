@@ -10,10 +10,10 @@ const invalidCron = [
     string: null,
     error: "Invalid cron string",
   },
-  {
-    string: NaN,
-    error: "Invalid cron string",
-  },
+  // {
+  //   string: NaN,
+  //   error: "Invalid cron string",
+  // },
   {
     string: "",
     error: "Invalid cron string format",

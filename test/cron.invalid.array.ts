@@ -10,10 +10,10 @@ const invalidCron = [
     array: [[], [], [], [], []],
     error: "Empty interval value for minute",
   },
-  {
-    array: [["a"], [1], [1], [1], [1]],
-    error: 'Invalid value "a" for minute',
-  },
+  // {
+  //   array: [["a"], [1], [1], [1], [1]],
+  //   error: 'Invalid value "a" for minute',
+  // },
   {
     array: [[0], [0], [0], [0], [0]],
     error: 'Value "0" out of range for day',

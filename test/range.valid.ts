@@ -8,6 +8,7 @@ const validRanges = [
     output: "0-4",
     min: 0,
     max: 6,
+    name: 'DUMMY',
   },
   {
     input: "SUN",
@@ -16,6 +17,7 @@ const validRanges = [
     min: 0,
     max: 6,
     alt: ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"],
+    name: 'DUMMY',
   },
   {
     input: "SUN,MON,TUE",
@@ -24,6 +26,7 @@ const validRanges = [
     min: 0,
     max: 6,
     alt: ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"],
+    name: 'DUMMY',
   },
   {
     input: "mon-fri",
@@ -32,6 +35,7 @@ const validRanges = [
     min: 0,
     max: 6,
     alt: ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"],
+    name: 'DUMMY',
   },
   {
     input: "1,2,3",
@@ -39,6 +43,7 @@ const validRanges = [
     output: "1-3",
     min: 1,
     max: 10,
+    name: 'DUMMY',
   },
   {
     input: "1,3,2",
@@ -46,6 +51,7 @@ const validRanges = [
     output: "*",
     min: 1,
     max: 3,
+    name: 'DUMMY',
   },
   {
     input: "1,2,5-10",
@@ -53,6 +59,7 @@ const validRanges = [
     output: "1-2,5-10",
     min: 1,
     max: 30,
+    name: 'DUMMY',
   },
   {
     input: "*",
@@ -60,6 +67,7 @@ const validRanges = [
     output: "*",
     min: 1,
     max: 5,
+    name: 'DUMMY',
   },
   {
     input: "5",
@@ -67,6 +75,7 @@ const validRanges = [
     output: "5",
     min: 1,
     max: 5,
+    name: 'DUMMY',
   },
   {
     input: "1-10/5",
@@ -74,6 +83,7 @@ const validRanges = [
     output: "1,6",
     min: 0,
     max: 59,
+    name: 'DUMMY',
   },
   {
     input: "5-30/5",
@@ -81,6 +91,7 @@ const validRanges = [
     output: "5-30/5",
     min: 0,
     max: 59,
+    name: 'DUMMY',
   },
   {
     input: "5,10,15,20,25,30",
@@ -88,6 +99,7 @@ const validRanges = [
     output: "5-30/5",
     min: 0,
     max: 59,
+    name: 'DUMMY',
   },
   {
     input: "5-20,35-45/5",
@@ -95,6 +107,7 @@ const validRanges = [
     output: "5,10,15,20,35,40,45",
     min: 0,
     max: 59,
+    name: 'DUMMY',
   },
   {
     input: "5,5,6,6,7,7",
@@ -102,6 +115,7 @@ const validRanges = [
     output: "5-7",
     min: 0,
     max: 59,
+    name: 'DUMMY',
   },
   {
     input: "1-1",
@@ -109,11 +123,17 @@ const validRanges = [
     output: "1",
     min: 1,
     max: 5,
+    name: 'DUMMY',
   },
 ];
 describe("Should parse valid string", function () {
   validRanges.forEach(function (validRange) {
-    const range = new Part(validRange);
+    const range = new Part(validRange, {
+      outputHashes: false,
+      outputMonthNames: false,
+      outputWeekdayNames: false,
+      timezone: null,
+    });
     range.fromString(validRange.input);
     it(validRange.input + " as array", function () {
       expect(range.toArray()).to.eql(validRange.arr);

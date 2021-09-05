@@ -49,7 +49,12 @@ describe("Should throw on invalid range string", function () {
   invalidRanges.forEach(function (invalidRange) {
     it(invalidRange.input, function () {
       expect(() =>
-        new Part(invalidRange).fromString(invalidRange.input)
+        new Part(invalidRange, {
+          outputHashes: false,
+          outputMonthNames: false,
+          outputWeekdayNames: false,
+          timezone: null,
+        }).fromString(invalidRange.input)
       ).to.throw(invalidRange.error);
     });
   });
