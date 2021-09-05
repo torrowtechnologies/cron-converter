@@ -1,4 +1,3 @@
-import { sprintf } from "sprintf-js";
 import { Unit } from "./units";
 import { InternalOptions } from "./options";
 import { sort, flatten, dedup, range } from "./util";
@@ -356,35 +355,29 @@ class Part {
       if (step && this.isInterval(step)) {
         if (this.isFullInterval(step)) {
           if (this.options.outputHashes) {
-            format = "H/%d";
+            retval = `H/${step}`
           } else {
-            format = "*/%d";
+            retval = `*/${step}`
           }
-          retval = sprintf(format, step);
         } else {
+          const min = this.formatValue(this.min())
+          const max = this.formatValue(this.max())
           if (this.options.outputHashes) {
-            format = "H(%s-%s)/%d";
+            retval = `H(${min}-${max})/${step}`;
           } else {
-            format = "%s-%s/%d";
+            retval = `${min}-${max}/${step}`;
           }
-          retval = sprintf(
-            format,
-            this.formatValue(this.min()),
-            this.formatValue(this.max()),
-            step
-          );
         }
       } else {
         retval = this.toRanges()
           .map(function (range) {
             if (range.length) {
-              return sprintf(
-                "%s-%s",
-                this.formatValue(range[0]),
-                this.formatValue(range[1])
-              );
+              const from = this.formatValue(range[0])
+              const to = this.formatValue(range[1])
+              return `${from}-${to}`
+            } else {
+              return this.formatValue(range);
             }
-            return this.formatValue(range);
           }, this)
           .join(",");
       }
