@@ -29,7 +29,7 @@ class Part {
    * @param {string} message A message string to use for the message.
    * @returns {Error} An error to thro
    */
-  error(message: string) : Error {
+  error(message: string): Error {
     return new Error(`${message} for ${this.unit.name}`);
   }
 
@@ -355,13 +355,13 @@ class Part {
       if (step && this.isInterval(step)) {
         if (this.isFullInterval(step)) {
           if (this.options.outputHashes) {
-            retval = `H/${step}`
+            retval = `H/${step}`;
           } else {
-            retval = `*/${step}`
+            retval = `*/${step}`;
           }
         } else {
-          const min = this.formatValue(this.min())
-          const max = this.formatValue(this.max())
+          const min = this.formatValue(this.min());
+          const max = this.formatValue(this.max());
           if (this.options.outputHashes) {
             retval = `H(${min}-${max})/${step}`;
           } else {
@@ -372,9 +372,9 @@ class Part {
         retval = this.toRanges()
           .map(function (range) {
             if (range.length) {
-              const from = this.formatValue(range[0])
-              const to = this.formatValue(range[1])
-              return `${from}-${to}`
+              const from = this.formatValue(range[0]);
+              const to = this.formatValue(range[1]);
+              return `${from}-${to}`;
             } else {
               return this.formatValue(range);
             }

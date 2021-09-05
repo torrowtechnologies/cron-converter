@@ -10,7 +10,7 @@ export class InternalOptions {
   outputWeekdayNames: boolean = false;
   outputMonthNames: boolean = false;
   timezone: string = null;
-  constructor(options : Options | undefined) {
+  constructor(options: Options | undefined) {
     if (options) {
       if (options.outputHashes) {
         this.outputHashes = options.outputHashes;
