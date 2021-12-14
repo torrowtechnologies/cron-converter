@@ -16,11 +16,11 @@ function Seeker(cron, now) {
   var date =
     now !== undefined
       ? typeof now == "string"
-        ? DateTime.fromISO(now)
-        : DateTime.fromJSDate(now)
-      : DateTime.now();
+        ? DateTime.fromISO(now, { "zone": "UTC" })
+        : DateTime.fromJSDate(now, { "zone": "UTC" })
+      : DateTime.utc();
   if (cron.options.timezone) {
-    date = date.setZone(cron.options.timezone);
+    date = date.setZone(cron.options.timezone).setZone("UTC",{ keepLocalTime:true });
   }
 
   if (!date.isValid) {
@@ -44,7 +44,7 @@ function Seeker(cron, now) {
  */
 Seeker.prototype.reset = function () {
   this.pristine = true;
-  this.date = DateTime.fromJSDate(this.now);
+  this.date = DateTime.fromJSDate(this.now.toJSDate(),{zone: "UTC"});
 };
 
 /**
@@ -57,9 +57,11 @@ Seeker.prototype.next = function () {
   if (this.pristine) {
     this.pristine = false;
   } else {
-    date = date.plus({ minutes: 1 });
+    this.date = this.date.plus({ minutes: 1 });
   }
-  return findDate(this.cron.parts, this.date);
+
+  this.date = findDate(this.cron.parts, this.date);
+  return this.date;
 };
 
 /**
@@ -70,7 +72,8 @@ Seeker.prototype.next = function () {
  */
 Seeker.prototype.prev = function () {
   this.pristine = false;
-  return findDate(this.cron.parts, this.date, true);
+  this.date = findDate(this.cron.parts, this.date, true);
+  return this.date;
 };
 
 /**
@@ -110,8 +113,9 @@ var findDate = function (parts, date, reverse) {
     throw new Error("Unable to find execution time for schedule");
   }
   date = date.set({ second: 0, millisecond: 0 });
+
   // Return new luxon.DateTime object
-  return DateTime.fromJSDate(date.toJSDate()).toUTC();
+  return date;
 };
 
 /**
@@ -165,7 +169,7 @@ var shiftDay = function (parts, date, operation, reset) {
 var shiftHour = function (parts, date, operation, reset) {
   var currentDay = date.day;
   while (!parts[1].has(date.hour)) {
-    date.set(date[operation](1, "hours")[reset]("hour").toObject());
+    date = date[operation]({ hours: 1 })[reset]("hour");
     if (currentDay !== date.day) {
       return { isChanged: true, date: date };
     }
@@ -186,7 +190,7 @@ var shiftHour = function (parts, date, operation, reset) {
 var shiftMinute = function (parts, date, operation, reset) {
   var currentHour = date.hour;
   while (!parts[0].has(date.minute)) {
-    date.set(date[operation](1, "minutes")[reset]("minute").toObject());
+    date = date[operation]({ minutes: 1 })[reset]("minute");
     if (currentHour !== date.hour) {
       return { isChanged: true, date: date };
     }
