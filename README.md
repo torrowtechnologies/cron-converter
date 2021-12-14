@@ -72,14 +72,14 @@ cronInstance.fromString('*/5 * * * *');
 // Get the iterator, initialised to now
 var schedule = cronInstance.schedule();
 
-// Optionally, use a reference Date or moment object
+// Optionally, use a reference Date or luxon.Datetime object
 var reference = new Date(2013, 2, 8, 9, 32);
-reference = moment([2013, 2, 8, 9, 32]);
+reference = DateTime.fromISO('2014-08-06T13:07:04.054');
 // And pass the reference to .schedule()
 schedule = cronInstance.schedule(reference);
 
 // Calls to ```.next()``` and ```.prev()```
-// return a Moment.js object
+// return a luxon.DateTime object
 
 // Prints: '2013-03-08T09:35:00+00:00''
 console.log(schedule.next().format());

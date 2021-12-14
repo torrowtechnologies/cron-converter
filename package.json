@@ -47,11 +47,10 @@
     "zuul": "^3.12.0"
   },
   "dependencies": {
-    "moment-timezone": "~0.5",
+    "luxon": "~2.2",
     "sprintf-js": "~1"
   },
   "browserify-shim": {
-    "moment": "global:moment",
     "sprintf-js": "global:sprintf"
   }
 }

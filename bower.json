@@ -22,7 +22,7 @@
     "tests"
   ],
   "dependencies": {
-    "moment-timezone": "~0.5",
+    "luxon": "~2.2",
     "sprintf": "~1"
   }
 }
