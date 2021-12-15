@@ -1,6 +1,7 @@
-"use strict";
+'use strict';
 
-const { DateTime } = require("luxon");
+var luxon = require('luxon');
+var DateTime = luxon.DateTime;
 
 /**
  * Creates an instance of Seeker.
@@ -11,25 +12,32 @@ const { DateTime } = require("luxon");
  */
 function Seeker(cron, now) {
   if (cron.parts === null) {
-    throw new Error("No schedule found");
+    throw new Error('No schedule found');
   }
-  var date =
-    now !== undefined
-      ? typeof now == "string"
-        ? DateTime.fromISO(now, { "zone": "UTC" })
-        : DateTime.fromJSDate(now, { "zone": "UTC" })
-      : DateTime.utc();
+  var date;
+  if (now !== undefined) {
+    if (typeof now == 'string') {
+      date = DateTime.fromISO(now, {zone: 'UTC'});
+    } else {
+      date = DateTime.fromJSDate(now, {zone: 'UTC'});
+    }
+  } else {
+    date = DateTime.utc();
+  }
+
   if (cron.options.timezone) {
-    date = date.setZone(cron.options.timezone).setZone("UTC",{ keepLocalTime:true });
+    date = date
+      .setZone(cron.options.timezone)
+      .setZone('UTC', {keepLocalTime: true});
   }
 
   if (!date.isValid) {
-    throw new Error("Invalid date provided");
+    throw new Error('Invalid date provided');
   }
 
-  if (date.get("second") > 0) {
+  if (date.get('second') > 0) {
     // Add a minute to the date to prevent returning dates in the past
-    date = date.plus({ minutes: 1 });
+    date = date.plus({minutes: 1});
   }
   this.cron = cron;
   this.now = date;
@@ -42,9 +50,9 @@ function Seeker(cron, now) {
  *
  * @this {Seeker}
  */
-Seeker.prototype.reset = function () {
+Seeker.prototype.reset = function() {
   this.pristine = true;
-  this.date = DateTime.fromJSDate(this.now.toJSDate(),{zone: "UTC"});
+  this.date = DateTime.fromJSDate(this.now.toJSDate(), {zone: 'UTC'});
 };
 
 /**
@@ -53,11 +61,11 @@ Seeker.prototype.reset = function () {
  * @this {Seeker}
  * @return {Date} The time the schedule would run next.
  */
-Seeker.prototype.next = function () {
+Seeker.prototype.next = function() {
   if (this.pristine) {
     this.pristine = false;
   } else {
-    this.date = this.date.plus({ minutes: 1 });
+    this.date = this.date.plus({minutes: 1});
   }
 
   this.date = findDate(this.cron.parts, this.date);
@@ -70,7 +78,7 @@ Seeker.prototype.next = function () {
  * @this {Seeker}
  * @return {Date} The time the schedule would have last run at.
  */
-Seeker.prototype.prev = function () {
+Seeker.prototype.prev = function() {
   this.pristine = false;
   this.date = findDate(this.cron.parts, this.date, true);
   return this.date;
@@ -84,13 +92,13 @@ Seeker.prototype.prev = function () {
  * @param {boolean} reverse Whether to find the previous value instead of next.
  * @return {luxon} The date the schedule would have executed at.
  */
-var findDate = function (parts, date, reverse) {
-  var operation = "plus";
-  var reset = "startOf";
+var findDate = function(parts, date, reverse) {
+  var operation = 'plus';
+  var reset = 'startOf';
   if (reverse) {
-    operation = "minus";
-    reset = "endOf";
-    date = date.minus({ minutes: 1 }); // Ensure prev and next cannot be same time
+    operation = 'minus';
+    reset = 'endOf';
+    date = date.minus({minutes: 1}); // Ensure prev and next cannot be same time
   }
   var retry = 24;
   while (--retry) {
@@ -110,9 +118,9 @@ var findDate = function (parts, date, reverse) {
     }
   }
   if (!retry) {
-    throw new Error("Unable to find execution time for schedule");
+    throw new Error('Unable to find execution time for schedule');
   }
-  date = date.set({ second: 0, millisecond: 0 });
+  date = date.set({second: 0, millisecond: 0});
 
   // Return new luxon.DateTime object
   return date;
@@ -127,9 +135,9 @@ var findDate = function (parts, date, reverse) {
  * @param {string} operation The function to call on date: 'plus' or 'minus'
  * @param {string} reset The function to call on date: 'startOf' or 'endOf'
  */
-var shiftMonth = function (parts, date, operation, reset) {
+var shiftMonth = function(parts, date, operation, reset) {
   while (!parts[3].has(date.month)) {
-    date = date[operation]({ months: 1 })[reset]("month");
+    date = date[operation]({months: 1})[reset]('month');
   }
 
   return date;
@@ -143,17 +151,17 @@ var shiftMonth = function (parts, date, operation, reset) {
  * @param {DateTime} date The date to shift.
  * @param {string} operation The function to call on date: 'plus' or 'minus'
  * @param {string} reset The function to call on date: 'startOf' or 'endOf'
- * @return {boolean} Whether the month of the date was changed
+ * @return {object} Whether the month of the date was changed
  */
-var shiftDay = function (parts, date, operation, reset) {
+var shiftDay = function(parts, date, operation, reset) {
   var currentMonth = date.month;
   while (!parts[2].has(date.day) || !parts[4].has(date.weekday)) {
-    date = date[operation]({ days: 1 })[reset]("day");
+    date = date[operation]({days: 1})[reset]('day');
     if (currentMonth !== date.month) {
-      return { isChanged: true, date: date };
+      return {isChanged: true, date: date};
     }
   }
-  return { isChanged: false, date: date };
+  return {isChanged: false, date: date};
 };
 
 /**
@@ -164,17 +172,17 @@ var shiftDay = function (parts, date, operation, reset) {
  * @param {DateTime} date The date to shift.
  * @param {string} operation The function to call on date: 'plus' or 'minus'
  * @param {string} reset The function to call on date: 'startOf' or 'endOf'
- * @return {boolean} Whether the day of the date was changed
+ * @return {object} Whether the day of the date was changed
  */
-var shiftHour = function (parts, date, operation, reset) {
+var shiftHour = function(parts, date, operation, reset) {
   var currentDay = date.day;
   while (!parts[1].has(date.hour)) {
-    date = date[operation]({ hours: 1 })[reset]("hour");
+    date = date[operation]({hours: 1})[reset]('hour');
     if (currentDay !== date.day) {
-      return { isChanged: true, date: date };
+      return {isChanged: true, date: date};
     }
   }
-  return { isChanged: false, date: date };
+  return {isChanged: false, date: date};
 };
 
 /**
@@ -185,17 +193,17 @@ var shiftHour = function (parts, date, operation, reset) {
  * @param {DateTime} date The date to shift.
  * @param {string} operation The function to call on date: 'plus' or 'minus'
  * @param {string} reset The function to call on date: 'startOf' or 'endOf'
- * @return {boolean} Whether the hour of the date was changed
+ * @return {object} Whether the hour of the date was changed
  */
-var shiftMinute = function (parts, date, operation, reset) {
+var shiftMinute = function(parts, date, operation, reset) {
   var currentHour = date.hour;
   while (!parts[0].has(date.minute)) {
-    date = date[operation]({ minutes: 1 })[reset]("minute");
+    date = date[operation]({minutes: 1})[reset]('minute');
     if (currentHour !== date.hour) {
-      return { isChanged: true, date: date };
+      return {isChanged: true, date: date};
     }
   }
-  return { isChanged: false, date: date };
+  return {isChanged: false, date: date};
 };
 
 module.exports = Seeker;
