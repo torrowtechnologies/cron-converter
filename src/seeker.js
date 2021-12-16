@@ -155,7 +155,7 @@ var shiftMonth = function(parts, date, operation, reset) {
  */
 var shiftDay = function(parts, date, operation, reset) {
   var currentMonth = date.month;
-  while (!parts[2].has(date.day) || !parts[4].has(date.weekday)) {
+  while (!parts[2].has(date.day) || !parts[4].has(date.weekday % 7)) {
     date = date[operation]({days: 1})[reset]('day');
     if (currentMonth !== date.month) {
       return {isChanged: true, date: date};
